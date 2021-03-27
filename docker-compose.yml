@@ -1,0 +1,118 @@
+version: "3.0"
+
+volumes:
+  keyfile:
+  data1:
+  data2:
+  data3:
+  data4:
+
+networks:
+  blt-replica-set:
+    driver: bridge
+    # ipam:
+    #   driver: default
+    #   config:
+    #     - subnet: 172.10.5.0/24
+
+services:
+
+  blt-mongo-keys:
+    image: depop/openssl-bats
+    volumes:
+      - ./keyfile:/mongo-conf
+    command: 'bash -c "openssl rand -base64 741 > /mongo-conf/mongodb-keyfile; chmod 600 /mongo-conf/mongodb-keyfile; chown 999 /mongo-conf/mongodb-keyfile"'
+
+  # Primary
+  mongo1:
+    image: mongo:latest
+    container_name: mongo1
+    volumes:
+      - ./keyfile:/opt/keyfile
+      - ./data1:/data/db
+    environment:
+      # - MONGODB_REPLICA_SET_MODE=primary
+      # - MONGODB_PRIMARY_PORT_NUMBER=27017
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGODB_REPLICA_SET_KEY=rs0
+    ports:
+      - 27017:27017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet rs0'
+    depends_on:
+        - blt-mongo-keys
+    networks:
+      blt-replica-set:
+  
+  # Worker 1
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    volumes:
+      - ./keyfile:/opt/keyfile
+      - ./data2:/data/db
+    environment:
+      # - MONGODB_REPLICA_SET_MODE=secondary
+      # - MONGODB_PRIMARY_HOST=mongo1
+      # - MONGODB_PRIMARY_PORT_NUMBER=27017
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGODB_REPLICA_SET_KEY=rs0
+    ports:
+      - 27018:27017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile  --replSet rs0'
+    depends_on:
+        - blt-mongo-keys
+    networks:
+      blt-replica-set:
+  
+  # Worker 2
+  mongo3:
+    image: mongo:latest
+    container_name: mongo3
+    volumes:
+      - ./keyfile:/opt/keyfile
+      - ./data3:/data/db
+    environment:
+      # - MONGODB_REPLICA_SET_MODE=secondary
+      # - MONGODB_PRIMARY_HOST=mongo1
+      # - MONGODB_PRIMARY_PORT_NUMBER=27017
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGODB_REPLICA_SET_KEY=rs0
+    ports:
+      - 27019:27017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile  --replSet rs0'
+    depends_on:
+        - blt-mongo-keys
+    networks:
+      blt-replica-set:
+  
+  # Worker 3
+  mongo4:
+    image: mongo:latest
+    container_name: mongo4
+    volumes:
+      - ./keyfile:/opt/keyfile
+      - ./data4:/data/db
+    environment:
+      # - MONGODB_REPLICA_SET_MODE=secondary
+      # - MONGODB_PRIMARY_HOST=mongo1
+      # - MONGODB_PRIMARY_PORT_NUMBER=27017
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGODB_REPLICA_SET_KEY=rs0
+    ports:
+      - 27020:27017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet rs0'
+    depends_on:
+        - blt-mongo-keys
+    networks:
+      blt-replica-set:
+
+  # adminmongo:
+  #   image: mrvautin/adminmongo
+  #   ports:
+  #     - 1234:1234
+  #   environment:
+  #     - HOST=0.0.0.0
