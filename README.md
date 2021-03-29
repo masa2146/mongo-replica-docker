@@ -6,12 +6,18 @@ docker-compose up
 ```
 ### Connect to the primary node
 ```
-docker-compose exec blt-mongo-primary mongo -u "root" -p "password"
+docker-compose exec mongo1 mongo -u "root" -p "password"
 ```
 
 ### Instantiate the replica set
 ```
-rs.initiate({"_id" : "rs0","members" : [{"_id" : 0,"host" : "mongo1:27017"},{"_id" : 1,"host" : "mongo2:27017"},{"_id" : 2,"host" : "mongo3:27017"},{"_id" : 3,"host" : "mongo4:27017"}]});
+var cfg = {"_id" : "rs0","members" : 
+[{"_id" : 0,"host" : "mongo1:27017", "priority": 2},
+{"_id" : 1,"host" : "mongo2:27017", "priority": 0},
+{"_id" : 2,"host" : "mongo3:27017", "priority": 0},
+{"_id" : 3,"host" : "mongo4:27017", "priority": 0}]}
+rs.initiate(cfg, { force: true });
+rs.reconfig(cfg, { force: true });
 ```
 ### Set the priority of the master over the other nodes
 ```

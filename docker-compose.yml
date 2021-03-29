@@ -1,4 +1,4 @@
-version: "3.0"
+version: "3.9"
 
 volumes:
   keyfile:
@@ -8,12 +8,12 @@ volumes:
   data4:
 
 networks:
-  blt-replica-set:
+  common-network:
     driver: bridge
     # ipam:
-    #   driver: default
-    #   config:
-    #     - subnet: 172.10.5.0/24
+      # driver: default
+      # config:
+      #   - subnet: 172.10.5.0/24
 
 services:
 
@@ -22,6 +22,21 @@ services:
     volumes:
       - ./keyfile:/mongo-conf
     command: 'bash -c "openssl rand -base64 741 > /mongo-conf/mongodb-keyfile; chmod 600 /mongo-conf/mongodb-keyfile; chown 999 /mongo-conf/mongodb-keyfile"'
+
+  mongo-setup:
+    container_name: mongo-setup
+    image: mongo
+    restart: on-failure
+    networks:
+      - common-network
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: [ "/scripts/setup.sh" ] # Make sure this file exists (see below for the setup.sh)
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - mongo4
 
   # Primary
   mongo1:
@@ -38,11 +53,12 @@ services:
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27017:27017
-    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet rs0'
+      - 28017:28017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --journal --bind_ip_all --replSet rs0'
     depends_on:
         - blt-mongo-keys
     networks:
-      blt-replica-set:
+      - common-network
   
   # Worker 1
   mongo2:
@@ -60,11 +76,13 @@ services:
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27018:27017
-    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile  --replSet rs0'
+      - 28018:28017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --journal --bind_ip_all  --replSet rs0'
     depends_on:
         - blt-mongo-keys
+        - mongo1
     networks:
-      blt-replica-set:
+      - common-network
   
   # Worker 2
   mongo3:
@@ -82,11 +100,13 @@ services:
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27019:27017
-    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile  --replSet rs0'
+      - 28019:28017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile  --journal --bind_ip_all --replSet rs0'
     depends_on:
         - blt-mongo-keys
+        - mongo1
     networks:
-      blt-replica-set:
+      - common-network
   
   # Worker 3
   mongo4:
@@ -104,11 +124,13 @@ services:
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27020:27017
-    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet rs0'
+      - 28020:28017
+    command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --journal --bind_ip_all --replSet rs0'
     depends_on:
         - blt-mongo-keys
+        - mongo1
     networks:
-      blt-replica-set:
+      - common-network
 
   # adminmongo:
   #   image: mrvautin/adminmongo
