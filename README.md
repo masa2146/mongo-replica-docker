@@ -9,7 +9,7 @@ docker-compose up
 docker-compose exec mongo1 mongo -u "root" -p "password"
 ```
 
-### Instantiate the replica set
+### Instantiate the replica set or force set primary
 ```
 var cfg = {"_id" : "rs0","members" : 
 [{"_id" : 0,"host" : "mongo1:27017", "priority": 2},
@@ -40,7 +40,7 @@ db.createCollection('my_collection');
 ```
 ### Verify credentials
 ```
-docker-compose exec blt-mongo-primary mongo -u "my_user" -p "password" --authenticationDatabase "my_data"
+docker-compose exec mongo1 mongo -u "my_user" -p "password" --authenticationDatabase "my_data"
 ```
 ### Destory the cluster
 ```
@@ -51,9 +51,6 @@ docker-compose down
 ```
 nano /etc/hosts
 
-127.0.0.1   mongo1
-127.0.0.1   mongo2
-127.0.0.1   mongo3
-127.0.0.1   mongo4
+127.0.0.1   mongo1 mongo2 mongo3 mongo4
 
 ```
