@@ -21,7 +21,7 @@ echo "Started.."
 
 echo SETUP.sh time now: `date +"%T" `
 
-mongo -u "root" -p "password" --host ${MONGODB1}:27017 <<EOF
+mongo -u "catalog" -p "123456" --host ${MONGODB1}:27017 <<EOF
 
 var cfg = {"_id" : "rs0","members" : 
 [{"_id" : 0,"host" : "${MONGODB1}:27017", "priority": 2},
