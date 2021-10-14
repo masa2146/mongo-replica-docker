@@ -45,15 +45,16 @@ services:
     volumes:
       - ./keyfile:/opt/keyfile
       - ./data1:/data/db
-    environment:
+    env_file: 
+      - mongod.env
+    # environment:
       # - MONGODB_REPLICA_SET_MODE=primary
       # - MONGODB_PRIMARY_PORT_NUMBER=27017
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGO_INITDB_ROOT_USERNAME=catalog
+      # - MONGO_INITDB_ROOT_PASSWORD=123456
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27017:27017
-      - 28017:28017
     command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --journal --bind_ip_all --replSet rs0'
     depends_on:
         - blt-mongo-keys
@@ -67,16 +68,17 @@ services:
     volumes:
       - ./keyfile:/opt/keyfile
       - ./data2:/data/db
-    environment:
+    env_file: 
+      - mongod.env      
+    # environment:
       # - MONGODB_REPLICA_SET_MODE=secondary
       # - MONGODB_PRIMARY_HOST=mongo1
       # - MONGODB_PRIMARY_PORT_NUMBER=27017
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGO_INITDB_ROOT_USERNAME=catalog
+      # - MONGO_INITDB_ROOT_PASSWORD=123456
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27018:27017
-      - 28018:28017
     command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --journal --bind_ip_all  --replSet rs0'
     depends_on:
         - blt-mongo-keys
@@ -91,16 +93,17 @@ services:
     volumes:
       - ./keyfile:/opt/keyfile
       - ./data3:/data/db
-    environment:
+    env_file: 
+      - mongod.env
+      # environment:
       # - MONGODB_REPLICA_SET_MODE=secondary
       # - MONGODB_PRIMARY_HOST=mongo1
       # - MONGODB_PRIMARY_PORT_NUMBER=27017
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGO_INITDB_ROOT_USERNAME=catalog
+      # - MONGO_INITDB_ROOT_PASSWORD=123456
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27019:27017
-      - 28019:28017
     command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile  --journal --bind_ip_all --replSet rs0'
     depends_on:
         - blt-mongo-keys
@@ -115,16 +118,17 @@ services:
     volumes:
       - ./keyfile:/opt/keyfile
       - ./data4:/data/db
-    environment:
+    env_file: 
+      - mongod.env    
+      # environment:
       # - MONGODB_REPLICA_SET_MODE=secondary
       # - MONGODB_PRIMARY_HOST=mongo1
       # - MONGODB_PRIMARY_PORT_NUMBER=27017
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      # - MONGO_INITDB_ROOT_USERNAME=catalog
+      # - MONGO_INITDB_ROOT_PASSWORD=123456
       # - MONGODB_REPLICA_SET_KEY=rs0
     ports:
       - 27020:27017
-      - 28020:28017
     command: 'mongod  --auth --keyFile /opt/keyfile/mongodb-keyfile --journal --bind_ip_all --replSet rs0'
     depends_on:
         - blt-mongo-keys
